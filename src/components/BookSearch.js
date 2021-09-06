@@ -1,7 +1,66 @@
 import React from "react";
+import BookGrid from "./BookGrid";
+import * as BooksAPI from "../BooksAPI";
 
 class BookSearch extends React.Component {
+  state = {
+    booksMap: {},
+    results: []
+  };
+
+  async componentDidMount() {
+    const shelvedBooks = await BooksAPI.getAll();
+    const booksMap = this.hashBooks(shelvedBooks);
+
+    this.setState({ booksMap });
+  }
+
+  hashBooks = books =>
+    books.reduce((map, book) => ({ ...map, [book.id]: book }), {});
+
+  unhashBooks = booksMap => Object.values(booksMap);
+
+  updateBook = book => {
+    const { booksMap, results } = this.state;
+    const newBooksMap = { ...booksMap, [book.id]: book };
+    this.setState(
+      {
+        booksMap: newBooksMap
+      },
+      () => {
+        const newResults = this.mapBooks(results);
+
+        this.setState({
+          results: newResults
+        });
+      }
+    );
+  };
+
+  mapBooks = books => {
+    const { booksMap } = this.state;
+
+    return books.map(book => ({
+      ...book,
+      shelf: booksMap[book.id] ? booksMap[book.id].shelf : "none"
+    }));
+  };
+
+  search = async event => {
+    const query = event.target.value;
+
+    const response = await BooksAPI.search(query);
+
+    const books = Array.isArray(response) ? response : [];
+
+    const results = this.mapBooks(books);
+
+    this.setState({ results });
+  };
+
   render() {
+    const { results } = this.state;
+
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -9,19 +68,16 @@ class BookSearch extends React.Component {
             Close
           </button>
           <div className="search-books-input-wrapper">
-            {/*
-                  NOTES: The search from BooksAPI is limited to a particular set of search terms.
-                  You can find these search terms here:
-                  https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
-
-                  However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-                  you don't find a specific author or title. Every search is limited by search terms.
-                */}
-            <input type="text" placeholder="Search by title or author" />
+            <input
+              type="text"
+              placeholder="Search by title or author"
+              onChange={this.search}
+              autoFocus
+            />
           </div>
         </div>
         <div className="search-books-results">
-          <ol className="books-grid"></ol>
+          <BookGrid books={results} updateBook={this.updateBook} />
         </div>
       </div>
     );

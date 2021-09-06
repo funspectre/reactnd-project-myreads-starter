@@ -20,24 +20,28 @@ class Book extends React.Component {
     if (!validShelves.has(shelf)) return;
 
     const newBook = { ...book, shelf };
-    this.props.updateBook(newBook);
+
+    if (typeof this.props.updateBook === "function") {
+      this.props.updateBook(newBook);
+    }
 
     const newShelvesMap = await BooksAPI.update(book, shelf);
 
-    console.log({ book, newShelvesMap });
-
     this.setState({ book: newBook });
-    this.props.reshelveBooks(newShelvesMap);
+
+    if (typeof this.props.reshelveBooks === "function") {
+      this.props.reshelveBooks(newShelvesMap);
+    }
   };
 
   render() {
     const { book } = this.state;
-    const {
-      title,
-      authors,
-      shelf,
-      imageLinks: { thumbnail: image }
-    } = book;
+    const { title, authors, shelf, imageLinks } = book;
+
+    const defaultImage =
+      "https://via.placeholder.com/128x193/fff/60ac5d?text=NO+COVER";
+
+    const image = imageLinks ? imageLinks.thumbnail : defaultImage;
 
     return (
       <div className="book">
@@ -62,8 +66,8 @@ class Book extends React.Component {
             </select>
           </div>
         </div>
-        <div className="book-title">{title}</div>
-        <div className="book-authors">{authors.join(", ")}</div>
+        <div className="book-title">{title || ""}</div>
+        <div className="book-authors">{(authors || []).join(", ")}</div>
       </div>
     );
   }
