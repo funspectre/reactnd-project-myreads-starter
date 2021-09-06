@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import BookShelf from "./BookShelf";
 import * as BooksAPI from "../BooksAPI";
 
@@ -100,7 +101,9 @@ class BookIndex extends React.Component {
           </div>
         </div>
         <div className="open-search">
-          <button onClick={this.props.openSearch}>Add a book</button>
+          <Link to="/search">
+            <button>Add a book</button>
+          </Link>
         </div>
       </div>
     );
