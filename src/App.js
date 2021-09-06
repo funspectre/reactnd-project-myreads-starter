@@ -1,8 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "./App.css";
-import BookIndex from "./components/BookIndex";
-import BookSearch from "./components/BookSearch";
+import BookIndex from "./views/BookIndex";
+import BookSearch from "./views/BookSearch";
 
 class BooksApp extends React.Component {
   render() {

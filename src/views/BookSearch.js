@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import BookGrid from "./BookGrid";
+import BookGrid from "../components/BookGrid";
 import * as BooksAPI from "../BooksAPI";
 
 class BookSearch extends React.Component {
